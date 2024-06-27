@@ -16,7 +16,9 @@
 //	R2 += R1;
 //}
 
-// int i = 0;
+// initialize R2, i
+	@R2
+	M=0
 	@i
 	M=0
 
