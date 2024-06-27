@@ -8,3 +8,40 @@
 // The algorithm is based on repetitive addition.
 
 //// Replace this comment with your code.
+
+// R2 = R0 * R1
+// you need to provide 2 arguments R0 and R1
+
+//for (int i = 0; i < R0; i++) {
+//	R2 += R1;
+//}
+
+// int i = 0;
+	@i
+	M=0
+
+// if i >= R0, skip loop
+(LOOP)
+	@R0
+	D=M
+	@i
+	D=M-D
+	@END
+	D;JGE
+
+// R2 += R1;
+	@R1
+	D=M
+	@R2
+	M=M+D
+
+// i++;
+	@i
+	M=M+1
+
+	@LOOP
+	0;JMP
+
+(END)
+	@END
+	0;JMP
