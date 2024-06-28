@@ -19,6 +19,7 @@ public class Main {
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
             }
+            //todo: should not be closed so early, used for later process
             reader.close();
         } catch (IOException e) {
             System.out.println("An error occurred.");
