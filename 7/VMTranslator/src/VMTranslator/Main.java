@@ -56,5 +56,14 @@ public class Main {
         Parser parser = new Parser(reader);
         CodeWriter codeWriter = new CodeWriter(writer);
 
+        while (parser.hasMoreCommands()) {
+
+            //todo: parse the command and write asm
+
+            parser.advance();
+        } // no more commands
+
+        // close the buffer
+        codeWriter.Close();
     }
 }
