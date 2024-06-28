@@ -9,26 +9,29 @@ public class Main {
      * @param args - fileName.vm
      */
     public static void main(String[] args) {
-        // Java IO
+        String inputFile = args[0];
+        BufferedReader reader = null;
+        BufferedWriter writer = null;
+
         // read the file given by inputFile
         // use bufferReader to read file line by line
-        String inputFile = args[0];
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
+            reader = new BufferedReader(new FileReader(inputFile));
+
+            //todo: Demo : how to read line
+            // String line;
+            // while ((line = reader.readLine()) != null) {
+            //     System.out.println(line);
+            // }
+
             //todo: should not be closed so early, used for later process
-            reader.close();
+            //reader.close();
         } catch (IOException e) {
             System.out.println("An error occurred.");
         }
 
-        // Parse .vm
-        // here is Parser()
+        // Create a new file - fileName.asm
         try {
-            // Create a new file
             //todo: substitute the name in accordance to given inputFile
             File file = new File("example.txt");
             if (file.createNewFile()) {
@@ -37,19 +40,21 @@ public class Main {
                 System.out.println("File already exists.");
             }
 
-            // Write to the file using BufferedWriter
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-            writer.write("Hello, world!");
-            writer.newLine(); // Adds a new line
-            writer.write("This is a new file.");
-            writer.close();
-            System.out.println("Successfully wrote to the file.");
+            //todo: Demo: write to the file using BufferedWriter
+            // writer = new BufferedWriter(new FileWriter(file));
+            // writer.write("Hello, world!");
+            // writer.newLine(); // Adds a new line
+            // writer.write("This is a new file.");
+            // writer.close();
+            // System.out.println("Successfully wrote to the file.");
 
         } catch (IOException e) {
             System.out.println("An error occurred.");
         }
 
-        // generate .asm
-        // here is CodeWriter()
+        // instantiate Parser and CodeWriter
+        Parser parser = new Parser(reader);
+        CodeWriter codeWriter = new CodeWriter(writer);
+
     }
 }

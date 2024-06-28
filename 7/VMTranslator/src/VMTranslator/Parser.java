@@ -3,13 +3,13 @@ package VMTranslator;
 import java.io.BufferedReader;
 
 public class Parser {
+    private final BufferedReader reader;
 
     /**
-     * todo: what is the purpose for Parser constructor
      * @param reader - buffer reader for filename.vm
      */
     public Parser(BufferedReader reader) {
-
+        this.reader = reader;
     }
 
     /**
