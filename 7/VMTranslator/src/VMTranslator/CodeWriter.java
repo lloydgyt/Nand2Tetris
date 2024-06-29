@@ -21,6 +21,10 @@ public class CodeWriter {
     //todo: remember to first attach original VM command
     public void writeArithmetic(String command) {
 
+        //todo: Demo - write to the file using BufferedWriter
+        // writer.write("Hello, world!");
+        // writer.newLine(); // Adds a new line
+        // writer.write("This is a new file.");
     }
 
     /**

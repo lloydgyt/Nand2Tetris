@@ -10,6 +10,7 @@ public class Main {
      */
     public static void main(String[] args) {
         String inputFile = args[0];
+        String outputFile = inputFile.substring(0, inputFile.lastIndexOf('.')) + ".asm";
         BufferedReader reader = null;
         BufferedWriter writer = null;
 
@@ -17,23 +18,13 @@ public class Main {
         // use bufferReader to read file line by line
         try {
             reader = new BufferedReader(new FileReader(inputFile));
-
         } catch (IOException e) {
             System.out.println("An error occurred.");
         }
 
         // Create a new file - fileName.asm
         try {
-            //todo: substitute the name in accordance to given inputFile
-            File file = new File("example.txt");
-            if (file.createNewFile()) {
-                System.out.println("File created: " + file.getName());
-            } else {
-                System.out.println("File already exists.");
-            }
-
-            writer = new BufferedWriter(new FileWriter(file));
-
+            writer = new BufferedWriter(new FileWriter(outputFile, false));
         } catch (IOException e) {
             System.out.println("An error occurred.");
         }
@@ -44,21 +35,9 @@ public class Main {
 
         while (parser.hasMoreCommands()) {
 
+            parser.advance();
             //todo: parse the command and write asm
 
-            //todo: Demo - how to read line
-            // String line;
-            // while ((line = reader.readLine()) != null) {
-            //     System.out.println(line);
-            // }
-
-            //todo: Demo - write to the file using BufferedWriter
-            // writer.write("Hello, world!");
-            // writer.newLine(); // Adds a new line
-            // writer.write("This is a new file.");
-            // writer.close();
-            // System.out.println("Successfully wrote to the file.");
-            parser.advance();
         } // no more commands
 
         // close the buffer
