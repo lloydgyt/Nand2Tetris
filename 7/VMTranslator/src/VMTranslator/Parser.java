@@ -38,11 +38,13 @@ public class Parser {
     }
 
     /**
-     * advance to next command
+     * Advance to next command, skipping blank line and comment.
      */
     public void advance() {
         try {
-            command = reader.readLine();
+            do {
+                command = reader.readLine();
+            } while (command.startsWith("//") || command.isBlank());
         } catch (IOException e) {
             System.out.println("IOError");
         }
@@ -56,10 +58,10 @@ public class Parser {
     }
 
     /**
-     * @return the first argument of current command
-     * for C_PUSH and C_POP, it's the segment of command
-     * in case of C_ARITHMETIC, the command itself is returned.
-     * Should not be called if current command is C_RETURN
+     * @return the first argument of current command.
+     * For C_PUSH and C_POP, it's the segment of command.
+     * In case of C_ARITHMETIC, the command itself is returned.
+     * Should not be called if current command is C_RETURN.
      */
     public String arg1() {
         return arg1;
@@ -78,11 +80,13 @@ public class Parser {
     /**
      * parse the command and set arg1, arg2 and cType
      */
-    private void parseCommand() {
+    public void parseCommand() {
         String[] words = command.split(" ");
 
         if (words[0].equals("push")) {
              cType = C_PUSH;
+             //todo: setting arg1 and arg2 may be extracted
+             // to make the code clear
              arg1 = words[1];
              arg2 = Integer.parseInt(words[2]);
         } else if (words[0].equals("pop")) {
@@ -97,5 +101,9 @@ public class Parser {
         /*else if (words[0].equals("")) {
           //todo: design a method that test if command belongs to arithmetic command
         }*/
+    }
+
+    public String currentCommand() {
+        return command;
     }
 }

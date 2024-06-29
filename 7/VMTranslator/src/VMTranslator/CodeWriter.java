@@ -18,13 +18,13 @@ public class CodeWriter {
      * the given arithmetic command
      * @param command - the name of Arithmetic command e.g. ADD
      */
-    //todo: remember to first attach original VM command
     public void writeArithmetic(String command) {
-
-        //todo: Demo - write to the file using BufferedWriter
-        // writer.write("Hello, world!");
-        // writer.newLine(); // Adds a new line
-        // writer.write("This is a new file.");
+        try {
+            //todo: must write assembly
+            writer.newLine(); // Adds a new line
+        } catch (IOException e) {
+            System.out.println("IOError");
+        }
     }
 
     /**
@@ -35,10 +35,25 @@ public class CodeWriter {
      * @param index - the offset from base address of segment
      */
     public void writePushPop(CommandType command, String segment, int index) {
-        //todo: Parser must provide
-        // 1. command
-        // 2. segment (String)
-        // 3. index
+        //todo: because there is no pop constant, here is just a
+        // temporary implementation to test everything is working so far
+        try {
+            // push constant i
+            writer.write(STR."// D = \{index}\r\n");
+            writer.write(STR."@\{index}\r\n");
+            writer.write("D=A\r\n");
+
+            writer.write("// RAM[SP] = D\r\n");
+            writer.write("@SP\r\n");
+            writer.write("A=M\r\n");
+            writer.write("M=D\r\n");
+
+            writer.write("// SP++\r\n");
+            writer.write("@SP\r\n");
+            writer.write("M=M+1\r\n");
+        } catch (IOException e) {
+            System.out.println("IOError");
+        }
     }
 
     /**

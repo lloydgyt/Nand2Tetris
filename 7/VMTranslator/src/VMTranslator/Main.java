@@ -2,6 +2,8 @@ package VMTranslator;
 
 import java.io.*;
 
+import static VMTranslator.CommandType.*;
+
 public class Main {
     /**
      * translate .vm file to .asm
@@ -10,7 +12,7 @@ public class Main {
      */
     public static void main(String[] args) {
         String inputFile = args[0];
-        String outputFile = inputFile.substring(0, inputFile.lastIndexOf('.')) + ".asm";
+        String outputFile = STR."\{inputFile.substring(0, inputFile.lastIndexOf('.'))}.asm";
         BufferedReader reader = null;
         BufferedWriter writer = null;
 
@@ -22,7 +24,7 @@ public class Main {
             System.out.println("An error occurred.");
         }
 
-        // Create a new file - fileName.asm
+        // write/rewrite to a file - fileName.asm
         try {
             writer = new BufferedWriter(new FileWriter(outputFile, false));
         } catch (IOException e) {
@@ -34,9 +36,21 @@ public class Main {
         CodeWriter codeWriter = new CodeWriter(writer);
 
         while (parser.hasMoreCommands()) {
-
             parser.advance();
-            //todo: parse the command and write asm
+            parser.parseCommand();
+
+            // attach original VM command
+            try {
+                assert writer != null;
+                writer.write(STR."// \{parser.currentCommand()} (VM code)\r\n");
+            } catch (IOException e) {
+                System.out.println("IOError");
+            }
+            if (parser.commandType() == C_POP || parser.commandType() == C_PUSH) {
+                codeWriter.writePushPop(parser.commandType(), parser.arg1(), parser.arg2());
+            } else if (parser.commandType() == C_ARITHMETIC) {
+                codeWriter.writeArithmetic(parser.arg1());
+            }
 
         } // no more commands
 
