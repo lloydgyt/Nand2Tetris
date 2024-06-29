@@ -13,14 +13,12 @@ public class CodeWriter {
         this.writer = writer;
     }
 
-    //todo: write API description and then implement
-
     /**
      * writes to the output file the assembly that implements
      * the given arithmetic command
-     * @param command - Todo: what is the meaning of command
-     *                      is it command type?
+     * @param command - the name of Arithmetic command e.g. ADD
      */
+    //todo: remember to first attach original VM command
     public void writeArithmetic(String command) {
 
     }
@@ -28,12 +26,15 @@ public class CodeWriter {
     /**
      * writes to the output file the assembly that implements
      * the given C_PUSH or C_POP command
-     * @param command - todo: ???
+     * @param command - either C_POP or C_PUSH
      * @param segment - either local, argument or etc.
      * @param index - the offset from base address of segment
      */
     public void writePushPop(CommandType command, String segment, int index) {
-
+        //todo: Parser must provide
+        // 1. command
+        // 2. segment (String)
+        // 3. index
     }
 
     /**

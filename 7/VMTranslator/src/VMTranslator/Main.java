@@ -18,14 +18,6 @@ public class Main {
         try {
             reader = new BufferedReader(new FileReader(inputFile));
 
-            //todo: Demo : how to read line
-            // String line;
-            // while ((line = reader.readLine()) != null) {
-            //     System.out.println(line);
-            // }
-
-            //todo: should not be closed so early, used for later process
-            //reader.close();
         } catch (IOException e) {
             System.out.println("An error occurred.");
         }
@@ -40,13 +32,7 @@ public class Main {
                 System.out.println("File already exists.");
             }
 
-            //todo: Demo: write to the file using BufferedWriter
-            // writer = new BufferedWriter(new FileWriter(file));
-            // writer.write("Hello, world!");
-            // writer.newLine(); // Adds a new line
-            // writer.write("This is a new file.");
-            // writer.close();
-            // System.out.println("Successfully wrote to the file.");
+            writer = new BufferedWriter(new FileWriter(file));
 
         } catch (IOException e) {
             System.out.println("An error occurred.");
@@ -60,6 +46,18 @@ public class Main {
 
             //todo: parse the command and write asm
 
+            //todo: Demo - how to read line
+            // String line;
+            // while ((line = reader.readLine()) != null) {
+            //     System.out.println(line);
+            // }
+
+            //todo: Demo - write to the file using BufferedWriter
+            // writer.write("Hello, world!");
+            // writer.newLine(); // Adds a new line
+            // writer.write("This is a new file.");
+            // writer.close();
+            // System.out.println("Successfully wrote to the file.");
             parser.advance();
         } // no more commands
 
