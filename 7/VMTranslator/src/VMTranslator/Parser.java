@@ -78,7 +78,7 @@ public class Parser {
     }
 
     /**
-     * parse the command and set arg1, arg2 and cType
+     * Parse the command and set arg1, arg2 and cType.
      */
     public void parseCommand() {
         String[] words = command.split(" ");

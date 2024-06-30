@@ -21,10 +21,64 @@ public class CodeWriter {
     public void writeArithmetic(String command) {
         try {
             //todo: must write assembly
-            writer.newLine(); // Adds a new line
+            // every arithmetic command except 'eq' and 'neg'
+            // pops twice and push once
+            if (command.equals("add")) {
+                writeAdd();
+            }
         } catch (IOException e) {
             System.out.println("IOError");
         }
+    }
+
+    private void writeAdd() throws IOException {
+        writeDecreaseSP();
+
+        writeGetTop();
+
+        writeDecreaseSP();
+
+        writer.write("// D = 7 + 8\r\n");
+        writer.write("@SP\r\n");
+        writer.write("A=M\r\n");
+        writer.write("D=D+M\r\n");
+
+        writeSetTop();
+
+        writeIncreaseSP();
+    }
+
+    private void writeDecreaseSP() throws IOException {
+        writer.write("// SP--\r\n");
+        writer.write("@SP\r\n");
+        writer.write("M=M-1\r\n");
+    }
+
+    private void writeIncreaseSP() throws IOException {
+        writer.write("// SP++\r\n");
+        writer.write("@SP\r\n");
+        writer.write("M=M+1\r\n");
+    }
+
+    /**
+     * Assembly that set D to *SP
+     */
+    private void writeGetTop() throws IOException {
+        //todo: how to show actual number at top of the stack instead of "*SP"
+        writer.write("// D = *SP\r\n");
+        writer.write("@SP\r\n");
+        writer.write("A=M\r\n");
+        writer.write("D=M\r\n");
+    }
+
+    /**
+     * Assembly that set *SP to D
+     */
+    private void writeSetTop() throws IOException {
+        writer.write("// *SP = D\r\n");
+        writer.write("@SP\r\n");
+        writer.write("A=M\r\n");
+        writer.write("M=D\r\n");
     }
 
     /**
@@ -43,14 +97,9 @@ public class CodeWriter {
             writer.write(STR."@\{index}\r\n");
             writer.write("D=A\r\n");
 
-            writer.write("// RAM[SP] = D\r\n");
-            writer.write("@SP\r\n");
-            writer.write("A=M\r\n");
-            writer.write("M=D\r\n");
+            writeSetTop();
 
-            writer.write("// SP++\r\n");
-            writer.write("@SP\r\n");
-            writer.write("M=M+1\r\n");
+            writeIncreaseSP();
         } catch (IOException e) {
             System.out.println("IOError");
         }
