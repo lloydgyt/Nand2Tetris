@@ -1,6 +1,5 @@
 package VMTranslator;
 
-import javax.swing.plaf.synth.SynthRootPaneUI;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -67,7 +66,6 @@ public class CodeWriter {
                 default:
                     //todo: should I handle this exception?
                     throw new IllegalArgumentException("unknown command type");
-                    break;
             }
         } catch (IOException e) {
             System.out.println("IOError");
@@ -146,31 +144,48 @@ public class CodeWriter {
         writeGetTop();
 
         // if D == 0, then jump
-        writer.write("@EQ");
-        writer.write("D;JEQ");
+        writer.write("@EQ\r\n");
+        writer.write("D;JEQ\r\n");
 
         // else, set *SP = 0
-        writer.write("@1");
-        writer.write("D=A");
+        writer.write("@1\r\n");
+        writer.write("D=A\r\n");
         // *SP = D
         writeSetTop();
 
         // jump to end
-        writer.write("@END");
-        writer.write("0;JMP");
+        writer.write("@END\r\n");
+        writer.write("0;JMP\r\n");
 
         // set *SP = 1
-        writer.write("(EQ)");
-        writer.write("@1");
-        writer.write("D=A");
+        writer.write("(EQ)\r\n");
+        writer.write("@1\r\n");
+        writer.write("D=A\r\n");
         // *SP = D
         writeSetTop();
 
         // end of if-statement
-        writer.write("(END)");
+        writer.write("(END)\r\n");
 
         // SP++
         writeIncreaseSP();
+
+    }
+
+    private void writeGt() throws IOException {
+
+    }
+
+    private void writeLt() throws IOException {
+
+    }
+    private void writeAnd() throws IOException {
+
+    }
+    private void writeOr() throws IOException {
+
+    }
+    private void writeNot() throws IOException {
 
     }
 
