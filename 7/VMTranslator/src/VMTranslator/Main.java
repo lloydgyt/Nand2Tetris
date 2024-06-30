@@ -42,6 +42,7 @@ public class Main {
             } catch (IOException e) {
                 System.out.println("IOError");
             }
+
             if (parser.commandType() == C_POP || parser.commandType() == C_PUSH) {
                 codeWriter.writePushPop(parser.commandType(), parser.arg1(), parser.arg2());
             } else if (parser.commandType() == C_ARITHMETIC) {
