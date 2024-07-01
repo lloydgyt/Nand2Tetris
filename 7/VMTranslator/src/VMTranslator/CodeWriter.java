@@ -12,9 +12,9 @@ public class CodeWriter {
     private final Map<String, ArithmeticType> map = new HashMap<>();
 
     // used for making labels for each command distinct
-    // there are 6 boolean command, hence the length
+    // there are 3 condition command, hence the length
     // all the number starts from 0
-    private final int[] labelNum = new int[6];
+    private final int[] labelNum = new int[3];
 
     /**
      * @param writer - buffer reader for filename.vm
@@ -248,13 +248,56 @@ public class CodeWriter {
         labelNum[2]++;
     }
     private void writeAnd() throws IOException {
+        // SP--
+        writeDecreaseSP();
+        // D = *SP
+        writeGetTop();
+        // SP--
+        writeDecreaseSP();
 
+        // D = D & M
+        writer.write("// AND operands\r\n");
+        writer.write("@SP\r\n");
+        writer.write("A=M\r\n");
+        writer.write("D=D&M\r\n");
+
+        // *SP = D
+        writeSetTop();
+        // SP++
+        writeIncreaseSP();
     }
-    private void writeOr() throws IOException {
 
+    private void writeOr() throws IOException {
+        // SP--
+        writeDecreaseSP();
+        // D = *SP
+        writeGetTop();
+        // SP--
+        writeDecreaseSP();
+
+        // D = D | M
+        writer.write("// OR operands\r\n");
+        writer.write("@SP\r\n");
+        writer.write("A=M\r\n");
+        writer.write("D=D|M\r\n");
+
+        // *SP = D
+        writeSetTop();
+        // SP++
+        writeIncreaseSP();
     }
     private void writeNot() throws IOException {
+        // SP--
+        writeDecreaseSP();
 
+        // M = !M
+        writer.write("// M = !M\r\n");
+        writer.write("@SP\r\n");
+        writer.write("A=M\r\n");
+        writer.write("M=!M\r\n");
+
+        // SP++
+        writeIncreaseSP();
     }
 
     private void writeDecreaseSP() throws IOException {
