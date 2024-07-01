@@ -130,10 +130,11 @@ public class CodeWriter {
     // then change @1 or @-1 there is no need to get immediate
     // numbers like 1 or -1 in this way
     private void writeEq() throws IOException {
+        // compute x - y, and push it to stack
+        writeSub();
         writeCmp("==");
     }
 
-    //todo: can I use previous-built command to implement other command?
     private void writeGt() throws IOException {
         // compute x - y, and push it to stack
         writeSub();
@@ -156,7 +157,7 @@ public class CodeWriter {
         writeGetTop();
 
         // compares D to 0, if holds then jump
-        writer.write(STR."@\{label}\{labelNum}\r\n");
+        writer.write(STR."@\{label}_\{labelNum}\r\n");
         writer.write(STR."D;J\{label}\r\n");
 
         // else, set *SP = 0
@@ -165,17 +166,17 @@ public class CodeWriter {
         writeSetTop();
 
         // jump to end
-        writer.write(STR."@END\{label}\{labelNum}\r\n");
+        writer.write(STR."@END_\{label}_\{labelNum}\r\n");
         writer.write("0;JMP\r\n");
 
         // set *SP = -1
-        writer.write(STR."(\{label}\{labelNum})\r\n");
+        writer.write(STR."(\{label}_\{labelNum})\r\n");
         writer.write("D=-1\r\n");
         // *SP = D
         writeSetTop();
 
         // end of if-statement
-        writer.write(STR."(END\{label}\{labelNum})\r\n");
+        writer.write(STR."(END\{label}_\{labelNum})\r\n");
 
         // SP++
         writeIncreaseSP();
