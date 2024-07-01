@@ -126,9 +126,6 @@ public class CodeWriter {
     /**
      * using if-statement to implement EQ
      */
-    //todo: these command may need refactoring
-    // then change @1 or @-1 there is no need to get immediate
-    // numbers like 1 or -1 in this way
     private void writeEq() throws IOException {
         // compute x - y, and push it to stack
         writeSub();
@@ -184,6 +181,7 @@ public class CodeWriter {
         labelNum++;
     }
 
+    //todo: refactor add, sub, and, or, not
     private void writeAnd() throws IOException {
         // SP--
         writeDecreaseSP();
@@ -237,6 +235,10 @@ public class CodeWriter {
         writeIncreaseSP();
     }
 
+    private void write2Operands() {
+
+    }
+
     private void writeDecreaseSP() throws IOException {
         writer.write("// SP--\r\n");
         writer.write("@SP\r\n");
@@ -278,20 +280,24 @@ public class CodeWriter {
      * @param index - the offset from base address of segment
      */
     public void writePushPop(CommandType command, String segment, int index) {
-        //todo: because there is no pop constant, here is just a
-        // temporary implementation to test everything is working so far
         try {
-            // push constant i
-            writer.write(STR."// D = \{index}\r\n");
-            writer.write(STR."@\{index}\r\n");
-            writer.write("D=A\r\n");
-
-            writeSetTop();
-
-            writeIncreaseSP();
+            if (command == CommandType.C_PUSH) {
+                if (segment.equals("constant")) {
+                    writePushConstant(index);
+                }
+            }
         } catch (IOException e) {
             System.out.println("IOError");
         }
+    }
+
+    // push constant i
+    private void writePushConstant(int index) throws IOException {
+        writer.write(STR."// D = \{index}\r\n");
+        writer.write(STR."@\{index}\r\n");
+        writer.write("D=A\r\n");
+        writeSetTop();
+        writeIncreaseSP();
     }
 
     /**

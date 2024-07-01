@@ -27,7 +27,6 @@ public class Parser {
      * if there is more commands to parse
      */
     public boolean hasMoreCommands() {
-        //todo: should there be a flag to indicate EOF?
         try {
             return reader.ready();
         } catch (IOException e) {
