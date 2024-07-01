@@ -102,21 +102,8 @@ public class CodeWriter {
     }
 
     private void writeSub() throws IOException {
-        // SP--
-        writeDecreaseSP();
-        // D = *SP
-        writeGetTop();
-        // SP--
-        writeDecreaseSP();
-        // D = M - D
-        writer.write("// subtracts operands\r\n");
-        writer.write("@SP\r\n");
-        writer.write("A=M\r\n");
-        writer.write("D=M-D\r\n");
-        // *SP = D
-        writeSetTop();
-        // SP++
-        writeIncreaseSP();
+        writeNeg();
+        writeAdd();
     }
 
     private void writeNeg() throws IOException {
@@ -138,6 +125,7 @@ public class CodeWriter {
      * using if-statement to implement EQ
      * use labelNum[0] as label number
      */
+    //todo: these command may need refactoring
     private void writeEq() throws IOException {
         // SP--
         writeDecreaseSP();
@@ -179,10 +167,85 @@ public class CodeWriter {
      */
     //todo: can I use previous-built command to implement other command?
     private void writeGt() throws IOException {
+        // compute x - y, and push it to stack
+        writeSub();
+
+        // SP--
+        writeDecreaseSP();
+        // D = *SP
+        writeGetTop();
+
+        // if D > 0, then jump
+        writer.write(STR."@GT\{labelNum[1]}\r\n");
+        writer.write("D;JGT\r\n");
+
+        // else, set *SP = 0
+        writer.write("@1\r\n");
+        writer.write("D=A\r\n");
+        // *SP = D
+        writeSetTop();
+
+        // jump to end
+        writer.write(STR."@ENDGT\{labelNum[1]}\r\n");
+        writer.write("0;JMP\r\n");
+
+        // set *SP = 1
+        writer.write(STR."(GT\{labelNum[1]})\r\n");
+        writer.write("@1\r\n");
+        writer.write("D=A\r\n");
+        // *SP = D
+        writeSetTop();
+
+        // end of if-statement
+        writer.write(STR."(ENDGT\{labelNum[1]})\r\n");
+
+        // SP++
+        writeIncreaseSP();
+
+        labelNum[1]++;
     }
 
+    /**
+     * use labelNum[2] as label number
+     */
     private void writeLt() throws IOException {
+        // compute x - y, and push it to stack
+        writeSub();
 
+        // SP--
+        writeDecreaseSP();
+        // D = *SP
+        writeGetTop();
+
+        // if D < 0, then jump
+        writer.write(STR."@LT\{labelNum[2]}\r\n");
+        writer.write("D;JLT\r\n");
+
+        // else, set *SP = 0
+        writer.write("@1\r\n");
+        writer.write("D=A\r\n");
+        // *SP = D
+        writeSetTop();
+
+        // jump to end
+        writer.write(STR."@ENDLT\{labelNum[2]}\r\n");
+        writer.write("0;JMP\r\n");
+
+        // set *SP = 1
+        writer.write(STR."(LT\{labelNum[2]})\r\n");
+        writer.write("@1\r\n");
+        writer.write("D=A\r\n");
+        // *SP = D
+        writeSetTop();
+
+        // end of if-statement
+        writer.write(STR."(ENDLT\{labelNum[2]})\r\n");
+
+        // SP++
+        writeIncreaseSP();
+
+        // increase label number for next LT command
+        labelNum[2]++;
     }
     private void writeAnd() throws IOException {
 
