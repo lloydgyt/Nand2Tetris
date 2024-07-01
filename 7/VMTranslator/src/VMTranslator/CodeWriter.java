@@ -11,6 +11,11 @@ public class CodeWriter {
     private final BufferedWriter writer;
     private final Map<String, ArithmeticType> map = new HashMap<>();
 
+    // used for making labels for each command distinct
+    // there are 6 boolean command, hence the length
+    // all the number starts from 0
+    private final int[] labelNum = new int[6];
+
     /**
      * @param writer - buffer reader for filename.vm
      */
@@ -103,13 +108,11 @@ public class CodeWriter {
         writeGetTop();
         // SP--
         writeDecreaseSP();
-
         // D = M - D
         writer.write("// subtracts operands\r\n");
         writer.write("@SP\r\n");
         writer.write("A=M\r\n");
         writer.write("D=M-D\r\n");
-
         // *SP = D
         writeSetTop();
         // SP++
@@ -131,20 +134,18 @@ public class CodeWriter {
     }
 
     //todo: suppose that 1 for true and 0 for false
-
     /**
      * using if-statement to implement EQ
-     * @throws IOException
+     * use labelNum[0] as label number
      */
     private void writeEq() throws IOException {
         // SP--
         writeDecreaseSP();
-
         // D = *SP
         writeGetTop();
 
         // if D == 0, then jump
-        writer.write("@EQ\r\n");
+        writer.write(STR."@EQ\{labelNum[0]}\r\n");
         writer.write("D;JEQ\r\n");
 
         // else, set *SP = 0
@@ -154,26 +155,30 @@ public class CodeWriter {
         writeSetTop();
 
         // jump to end
-        writer.write("@END\r\n");
+        writer.write(STR."@ENDEQ\{labelNum[0]}\r\n");
         writer.write("0;JMP\r\n");
 
         // set *SP = 1
-        writer.write("(EQ)\r\n");
+        writer.write(STR."(EQ\{labelNum[0]})\r\n");
         writer.write("@1\r\n");
         writer.write("D=A\r\n");
         // *SP = D
         writeSetTop();
 
         // end of if-statement
-        writer.write("(END)\r\n");
+        writer.write(STR."(ENDEQ\{labelNum[0]})\r\n");
 
         // SP++
         writeIncreaseSP();
 
+        labelNum[0]++;
     }
 
+    /**
+     * use labelNum[1] as label number
+     */
+    //todo: can I use previous-built command to implement other command?
     private void writeGt() throws IOException {
-
     }
 
     private void writeLt() throws IOException {
