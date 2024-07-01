@@ -9,27 +9,30 @@ import static VMTranslator.ArithmeticType.*;
 
 public class CodeWriter {
     private final BufferedWriter writer;
-    private final Map<String, ArithmeticType> map = new HashMap<>();
+    private final Map<String, ArithmeticType> arithmeticTypeMap = new HashMap<>();
+    private final Map<String, String> compareLabelMap = new HashMap<>();
 
     // used for making labels for each command distinct
-    // there are 3 condition command, hence the length
-    // all the number starts from 0
-    private final int[] labelNum = new int[3];
+    private int labelNum = 0;
 
     /**
      * @param writer - buffer reader for filename.vm
      */
     public CodeWriter(BufferedWriter writer) {
         this.writer = writer;
-        map.put("add", ADD);
-        map.put("sub", SUB);
-        map.put("neg", NEG);
-        map.put("eq", EQ);
-        map.put("gt", GT);
-        map.put("lt", LT);
-        map.put("and", AND);
-        map.put("or", OR);
-        map.put("not", NOT);
+        arithmeticTypeMap.put("add", ADD);
+        arithmeticTypeMap.put("sub", SUB);
+        arithmeticTypeMap.put("neg", NEG);
+        arithmeticTypeMap.put("eq", EQ);
+        arithmeticTypeMap.put("gt", GT);
+        arithmeticTypeMap.put("lt", LT);
+        arithmeticTypeMap.put("and", AND);
+        arithmeticTypeMap.put("or", OR);
+        arithmeticTypeMap.put("not", NOT);
+
+        compareLabelMap.put("<", "LT");
+        compareLabelMap.put(">", "GT");
+        compareLabelMap.put("==", "EQ");
     }
 
     /**
@@ -40,7 +43,7 @@ public class CodeWriter {
     public void writeArithmetic(String command) {
         try {
             // use Map and Switch statement choose which commands to write
-            switch (map.get(command)) {
+            switch (arithmeticTypeMap.get(command)) {
                 case ADD:
                     writeAdd();
                     break;
@@ -120,133 +123,66 @@ public class CodeWriter {
         writeIncreaseSP();
     }
 
-    //todo: suppose that -1 for true and 0 for false
     /**
      * using if-statement to implement EQ
-     * use labelNum[0] as label number
      */
     //todo: these command may need refactoring
+    // then change @1 or @-1 there is no need to get immediate
+    // numbers like 1 or -1 in this way
     private void writeEq() throws IOException {
-        // SP--
-        writeDecreaseSP();
-        // D = *SP
-        writeGetTop();
-
-        // if D == 0, then jump
-        writer.write(STR."@EQ\{labelNum[0]}\r\n");
-        writer.write("D;JEQ\r\n");
-
-        // else, set *SP = 0
-        writer.write("@1\r\n");
-        writer.write("D=A\r\n");
-        // *SP = D
-        writeSetTop();
-
-        // jump to end
-        writer.write(STR."@ENDEQ\{labelNum[0]}\r\n");
-        writer.write("0;JMP\r\n");
-
-        // set *SP = -1
-        writer.write(STR."(EQ\{labelNum[0]})\r\n");
-        writer.write("@-1\r\n");
-        writer.write("D=A\r\n");
-        // *SP = D
-        writeSetTop();
-
-        // end of if-statement
-        writer.write(STR."(ENDEQ\{labelNum[0]})\r\n");
-
-        // SP++
-        writeIncreaseSP();
-
-        labelNum[0]++;
+        writeCmp("==");
     }
 
-    /**
-     * use labelNum[1] as label number
-     */
     //todo: can I use previous-built command to implement other command?
     private void writeGt() throws IOException {
         // compute x - y, and push it to stack
         writeSub();
-
-        // SP--
-        writeDecreaseSP();
-        // D = *SP
-        writeGetTop();
-
-        // if D > 0, then jump
-        writer.write(STR."@GT\{labelNum[1]}\r\n");
-        writer.write("D;JGT\r\n");
-
-        // else, set *SP = 0
-        writer.write("@1\r\n");
-        writer.write("D=A\r\n");
-        // *SP = D
-        writeSetTop();
-
-        // jump to end
-        writer.write(STR."@ENDGT\{labelNum[1]}\r\n");
-        writer.write("0;JMP\r\n");
-
-        // set *SP = -1
-        writer.write(STR."(GT\{labelNum[1]})\r\n");
-        writer.write("@-1\r\n");
-        writer.write("D=A\r\n");
-        // *SP = D
-        writeSetTop();
-
-        // end of if-statement
-        writer.write(STR."(ENDGT\{labelNum[1]})\r\n");
-
-        // SP++
-        writeIncreaseSP();
-
-        labelNum[1]++;
+        writeCmp(">");
     }
 
-    /**
-     * use labelNum[2] as label number
-     */
     private void writeLt() throws IOException {
         // compute x - y, and push it to stack
         writeSub();
+        writeCmp("<");
+    }
+
+    // pass in compare type ">", "<" or "=="
+    private void writeCmp(String compareType) throws IOException {
+        String label = compareLabelMap.get(compareType);
 
         // SP--
         writeDecreaseSP();
         // D = *SP
         writeGetTop();
 
-        // if D < 0, then jump
-        writer.write(STR."@LT\{labelNum[2]}\r\n");
-        writer.write("D;JLT\r\n");
+        // compares D to 0, if holds then jump
+        writer.write(STR."@\{label}\{labelNum}\r\n");
+        writer.write(STR."D;J\{label}\r\n");
 
         // else, set *SP = 0
-        writer.write("@1\r\n");
-        writer.write("D=A\r\n");
+        writer.write("D=0\r\n");
         // *SP = D
         writeSetTop();
 
         // jump to end
-        writer.write(STR."@ENDLT\{labelNum[2]}\r\n");
+        writer.write(STR."@END\{label}\{labelNum}\r\n");
         writer.write("0;JMP\r\n");
 
         // set *SP = -1
-        writer.write(STR."(LT\{labelNum[2]})\r\n");
-        writer.write("@-1\r\n");
-        writer.write("D=A\r\n");
+        writer.write(STR."(\{label}\{labelNum})\r\n");
+        writer.write("D=-1\r\n");
         // *SP = D
         writeSetTop();
 
         // end of if-statement
-        writer.write(STR."(ENDLT\{labelNum[2]})\r\n");
+        writer.write(STR."(END\{label}\{labelNum})\r\n");
 
         // SP++
         writeIncreaseSP();
 
-        // increase label number for next LT command
-        labelNum[2]++;
+        labelNum++;
     }
+
     private void writeAnd() throws IOException {
         // SP--
         writeDecreaseSP();
