@@ -10,6 +10,7 @@ import static VMTranslator.ArithmeticType.*;
 public class CodeWriter {
     private final BufferedWriter writer;
     private final Map<String, ArithmeticType> arithmeticTypeMap = new HashMap<>();
+    private final Map<String, String> segmentTypeMap = new HashMap<>();
     private final Map<String, String> compareLabelMap = new HashMap<>();
 
     // used for making labels for each command distinct
@@ -29,6 +30,22 @@ public class CodeWriter {
         arithmeticTypeMap.put("and", AND);
         arithmeticTypeMap.put("or", OR);
         arithmeticTypeMap.put("not", NOT);
+
+        //todo : map and switch is used in execution logic that varies greatly
+        // in this case push and pop is basically the same for different segment
+        // you should not use it
+        // segmentTypeMap.put("constant", CONSTANT);
+        // segmentTypeMap.put("local", LOCAL);
+        // segmentTypeMap.put("argument", ARGUMENT);
+        // segmentTypeMap.put("this", THIS);
+        // segmentTypeMap.put("that", THAT);
+        // segmentTypeMap.put("temp", TEMP);
+
+        segmentTypeMap.put("constant", "SP");
+        segmentTypeMap.put("local", "LCL");
+        segmentTypeMap.put("argument", "ARG");
+        segmentTypeMap.put("this", "THIS");
+        segmentTypeMap.put("that", "THAT");
 
         compareLabelMap.put("<", "LT");
         compareLabelMap.put(">", "GT");
@@ -282,22 +299,48 @@ public class CodeWriter {
     public void writePushPop(CommandType command, String segment, int index) {
         try {
             if (command == CommandType.C_PUSH) {
-                if (segment.equals("constant")) {
-                    writePushConstant(index);
-                }
+                //todo: switch-map to choose which method
+                // switch (segmentTypeMap.get(segment)) {
+                //     case CONSTANT:
+                //         writePushConstant(index);
+                //
+                // }
+                writePush(segment, index);
             }
         } catch (IOException e) {
             System.out.println("IOError");
         }
     }
 
-    // push constant i
-    private void writePushConstant(int index) throws IOException {
+    /**
+     * @param segment
+     * @param index
+     */
+    private void writePush(String segment, int index) throws IOException {
         writer.write(STR."// D = \{index}\r\n");
         writer.write(STR."@\{index}\r\n");
         writer.write("D=A\r\n");
-        writeSetTop();
-        writeIncreaseSP();
+
+        //todo: instead of changing the existing method name and functionality
+        // a wrapper function will be better!
+        writeSetSegmentTop(segment);
+    }
+
+    //todo: the behavior when segment is 'constant' is the same as writeSet/GetTop()
+    // need to refactor later
+    private void writeSetSegmentTop(String segment) throws IOException {
+        String pointer = segmentTypeMap.get(segment);
+
+        //todo: this part of code should be arranged in the following fashion
+        // writeSetTop();
+        // writeIncreaseSP();
+        writer.write(STR."// *\{pointer} = D\r\n");
+        writer.write(STR."@\{pointer}\r\n");
+        writer.write("A=M\r\n");
+        writer.write("M=D\r\n");
+        writer.write(STR."// \{pointer}++\r\n");
+        writer.write(STR."@\{pointer}\r\n");
+        writer.write("M=M+1\r\n");
     }
 
     /**
