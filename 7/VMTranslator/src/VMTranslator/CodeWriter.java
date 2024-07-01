@@ -120,7 +120,7 @@ public class CodeWriter {
         writeIncreaseSP();
     }
 
-    //todo: suppose that 1 for true and 0 for false
+    //todo: suppose that -1 for true and 0 for false
     /**
      * using if-statement to implement EQ
      * use labelNum[0] as label number
@@ -146,9 +146,9 @@ public class CodeWriter {
         writer.write(STR."@ENDEQ\{labelNum[0]}\r\n");
         writer.write("0;JMP\r\n");
 
-        // set *SP = 1
+        // set *SP = -1
         writer.write(STR."(EQ\{labelNum[0]})\r\n");
-        writer.write("@1\r\n");
+        writer.write("@-1\r\n");
         writer.write("D=A\r\n");
         // *SP = D
         writeSetTop();
@@ -189,9 +189,9 @@ public class CodeWriter {
         writer.write(STR."@ENDGT\{labelNum[1]}\r\n");
         writer.write("0;JMP\r\n");
 
-        // set *SP = 1
+        // set *SP = -1
         writer.write(STR."(GT\{labelNum[1]})\r\n");
-        writer.write("@1\r\n");
+        writer.write("@-1\r\n");
         writer.write("D=A\r\n");
         // *SP = D
         writeSetTop();
@@ -231,9 +231,9 @@ public class CodeWriter {
         writer.write(STR."@ENDLT\{labelNum[2]}\r\n");
         writer.write("0;JMP\r\n");
 
-        // set *SP = 1
+        // set *SP = -1
         writer.write(STR."(LT\{labelNum[2]})\r\n");
-        writer.write("@1\r\n");
+        writer.write("@-1\r\n");
         writer.write("D=A\r\n");
         // *SP = D
         writeSetTop();
