@@ -173,7 +173,7 @@ public class CodeWriter {
         writeSetTop();
 
         // end of if-statement
-        writer.write(STR."(END\{label}_\{labelNum})\r\n");
+        writer.write(STR."(END_\{label}_\{labelNum})\r\n");
 
         // SP++
         writeIncreaseSP();
