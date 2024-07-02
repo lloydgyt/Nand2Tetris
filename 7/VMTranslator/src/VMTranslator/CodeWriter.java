@@ -316,6 +316,10 @@ public class CodeWriter {
 
     //todo: need refactor with PopSegment
     private void writePushSegment(String segment, int index) throws IOException {
+        if (segment.equals("constant")) {
+            writePushConstant(index);
+            return;
+        }
         writeGetStoreAddress(segment, index);
         // get the value at segment i
         // @R15
@@ -328,6 +332,17 @@ public class CodeWriter {
         // *SP = D
         writeSetTop();
         // SP++
+        writeIncreaseSP();
+    }
+
+    private void writePushConstant(int index) throws IOException {
+        // prepare immediate number
+        // D = index
+        writer.write(STR."// D = \{index}\r\n");
+        writer.write(STR."@\{index}\r\n");
+        writer.write("D=A\r\n");
+
+        writeSetTop();
         writeIncreaseSP();
     }
 
