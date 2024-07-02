@@ -305,42 +305,92 @@ public class CodeWriter {
                 //         writePushConstant(index);
                 //
                 // }
-                writePush(segment, index);
+                writePushSegment(segment, index);
+            } else {
+                writePopSegment(segment, index);
             }
         } catch (IOException e) {
             System.out.println("IOError");
         }
     }
 
-    /**
-     * @param segment
-     * @param index
-     */
-    private void writePush(String segment, int index) throws IOException {
+    private void writePushSegment(String segment, int index) throws IOException {
+        String pointer = segmentTypeMap.get(segment);
+
+        // prepare immediate number
+        // D = index
         writer.write(STR."// D = \{index}\r\n");
         writer.write(STR."@\{index}\r\n");
         writer.write("D=A\r\n");
 
-        //todo: instead of changing the existing method name and functionality
-        // a wrapper function will be better!
-        writeSetSegmentTop(segment);
+        if (segment.equals("temp")) {
+            // temp 0 -> RAM[5]
+            // temp 7 -> RAM[12]
+            int offset = index + 5;
+
+            writer.write(STR."@R\{offset}\r\n");
+            writer.write("M=D\r\n");
+        } else {
+            //todo: this part of code should be arranged in the following fashion
+            // this is totally wrong!
+            // writeSetTop();
+            // writeIncreaseSP();
+            writer.write(STR."// *\{pointer} = D\r\n");
+            writer.write(STR."@\{pointer}\r\n");
+            writer.write("A=M\r\n");
+            writer.write("M=D\r\n");
+            writer.write(STR."// \{pointer}++\r\n");
+            writer.write(STR."@\{pointer}\r\n");
+            writer.write("M=M+1\r\n");
+        }
     }
 
-    //todo: the behavior when segment is 'constant' is the same as writeSet/GetTop()
-    // need to refactor later
-    private void writeSetSegmentTop(String segment) throws IOException {
-        String pointer = segmentTypeMap.get(segment);
+    //todo: need to use R13, R14 or R15 to temporarily store data
 
-        //todo: this part of code should be arranged in the following fashion
-        // writeSetTop();
-        // writeIncreaseSP();
-        writer.write(STR."// *\{pointer} = D\r\n");
-        writer.write(STR."@\{pointer}\r\n");
+    /**
+     * 1. R15 = address (segment pointer + index)
+     * 2. SP--
+     * 3. D = *SP
+     * 4. *R15 = D
+     */
+    private void writePopSegment(String segment, int index) throws IOException {
+        if (segment.equals("temp")) {
+             // temp 0 -> RAM[5]
+             // temp 7 -> RAM[12]
+            int offset = index + 5;
+
+            writer.write(STR."@\{offset}\r\n");
+            writer.write("D=A\r\n");
+            writer.write("@R15\r\n");
+            writer.write("M=D\r\n");
+        } else {
+            String pointer = segmentTypeMap.get(segment);
+
+            // get destination address and store it at R15
+            // @segment
+            // AD = M
+            // @index ; this is offset
+            // D = A + D
+            // @R15 ; store the address
+            // M = D
+            writer.write(STR."@\{pointer}\r\n");
+            writer.write("AD=M\r\n");
+            writer.write(STR."@\{index}\r\n");
+            writer.write("D=D+A\r\n");
+            writer.write("@R15\r\n");
+            writer.write("M=D\r\n");
+        }
+
+        // SP--
+        writeDecreaseSP();
+        // D = *SP
+        writeGetTop();
+        // @R15
+        // A = M
+        // M = D
+        writer.write("@R15\r\n");
         writer.write("A=M\r\n");
         writer.write("M=D\r\n");
-        writer.write(STR."// \{pointer}++\r\n");
-        writer.write(STR."@\{pointer}\r\n");
-        writer.write("M=M+1\r\n");
     }
 
     /**
